@@ -17,3 +17,16 @@ if len(number_phone) == 10:
 
 
  #Task3
+math_quiz = int(input("решите уравнение 25+34 = "))
+if math_quiz == 59:
+    print("все правильно, молодец!!")
+else:
+    print("подумай еще")
+
+#task4
+name = "алексей"
+name_user = input("Введите пожалуйста ваше имя: ")
+if name_user.lower() == name:
+    print("Добро пожаловать Алексей")
+else:
+    print("Отказано в доступе")
