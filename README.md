@@ -210,14 +210,6 @@ File → New Project from Version Control
 
 Вставте **URL вашого fork**.
 
-На GitHub натисніть:
-
-```
-Fork
-```
-
-У вас з’явиться копія:
-
 ```
 github.com/<your-username>/PY_Course_Victor-Nikoriak-23_02
 ```
