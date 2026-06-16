@@ -1,0 +1,23 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 40px;
+}
+h1 {
+    color: #333;
+}
+.notes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.note-card {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.note-date {
+    font-size: 0.8rem;
+    color: #888;
+}
