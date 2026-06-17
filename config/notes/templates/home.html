@@ -1,19 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="uk">
 <head>
+    <meta charset="UTF-8">
     <title>Нотатки</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 
-<h1>Список нотаток</h1>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/">🗒️ Мій Проєкт</a>
+            <div class="navbar-nav">
+                <a class="nav-link active" href="/">Головна</a>
+                <a class="nav-link" href="/create/">➕ Створити нотатку</a>
+            </div>
+        </div>
+    </nav>
 
-{% for note in notes %}
-    <h2>{{ note.title }}</h2>
-    <p>{{ note.text }}</p>
-    <p>Категорія: {{ note.category.title }}</p>
-    <p>Нагадування: {{ note.reminder }}</p>
-    <hr>
-{% endfor %}
+    <div class="container">
+        <h1 class="mb-4 text-center text-primary fw-bold">Список нотаток</h1>
+
+        <div class="row">
+            {% for note in notes %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm border-start border-primary border-3">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold text-dark">{{ note.title }}</h5>
+                            <p class="card-text text-secondary">{{ note.text }}</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 pt-0">
+                            <span class="badge bg-info text-dark me-1">📁 {{ note.category.title }}</span>
+                            {% if note.reminder %}
+                                <span class="badge bg-warning text-dark">⏰ {{ note.reminder }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 
 </body>
 </html>
