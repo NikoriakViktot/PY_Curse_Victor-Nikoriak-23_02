@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Мої Нотатки</title>
+    <!-- Підключаємо твій CSS файл (переконайся, що назва стилів збігається) -->
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+
+    <h1>Мої Нотатки</h1>
+
+    <div class="notes-container">
+        {% for note in notes %}
+            <div class="note-card">
+                <h3>{{ note.title }}</h3>
+                <p>{{ note.text }}</p>
+
+                {% if note.category %}
+                    <span class="category-badge">{{ note.category.title }}</span>
+                {% endif %}
+
+                {% if note.reminder %}
+                    <!-- Змінили клас на note-date, щоб підтягнулися стилі з твого CSS -->
+                    <div class="note-date">Нагадування: {{ note.reminder }}</div>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>Нотаток поки немає.</p>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
