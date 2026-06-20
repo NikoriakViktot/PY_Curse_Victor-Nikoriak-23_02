@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Мої Нотатки</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+
+    <h1>Мої Нотатки</h1>
+
+    <div class="main-layout">
+        <!-- БЛОК СТВОРЕННЯ НОТАТКИ -->
+        <div class="form-container">
+            <h3>Створити нову нотатку</h3>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="submit-btn">Зберегти нотатку</button>
+            </form>
+        </div>
+
+        <!-- ПАНЕЛЬ ПОШУКУ ТА ФІЛЬТРАЦІЇ -->
+        <div class="filter-container">
+            <h3>Пошук та фільтри</h3>
+            <form method="GET" action="{% url 'notes_home' %}">
+                <!-- Пошук за назвою -->
+                <input type="text" name="search" value="{{ search_query }}" placeholder="Пошук за заголовком..." class="form-input">
+
+                <!-- Фільтр за категорією -->
+                <select name="category" class="form-select">
+                    <option value="">Всі категорії</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if selected_category == cat.id|slugify %}selected{% endif %}>{{ cat.title }}</option>
+                    {% endfor %}
+                </select>
+
+                <!-- Фільтр за часом нагадування -->
+                <select name="reminder_filter" class="form-select">
+                    <option value="">Будь-який час нагадування</option>
+                    <option value="upcoming" {% if selected_reminder == 'upcoming' %}selected{% endif %}>Майбутні нагадування</option>
+                    <option value="past" {% if selected_reminder == 'past' %}selected{% endif %}>Минулі нагадування</option>
+                    <option value="none" {% if selected_reminder == 'none' %}selected{% endif %}>Без нагадувань</option>
+                </select>
+
+                <button type="submit" class="search-btn">Застосувати</button>
+                <a href="{% url 'notes_home' %}" class="reset-btn">Скинути</a>
+            </form>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- СПИСОК НОТАТОК -->
+    <div class="notes-container">
+        {% for note in notes %}
+            <div class="note-card">
+                <div class="note-header">
+                    <h3>{{ note.title }}</h3>
+                    <!-- КНОПКА ВИДАЛЕННЯ -->
+                    <a href="{% url 'delete_note' note.id %}" class="delete-btn" onclick="return confirm('Ви впевнені, що хочете видалити цю нотатку?');">❌ Видалити</a>
+                </div>
+                <p>{{ note.text }}</p>
+
+                {% if note.category %}
+                    <span class="category-badge">{{ note.category.title }}</span>
+                {% endif %}
+
+                {% if note.reminder %}
+                    <div class="note-date">Нагадування: {{ note.reminder }}</div>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>Нотаток за такими критеріями не знайдено.</p>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
