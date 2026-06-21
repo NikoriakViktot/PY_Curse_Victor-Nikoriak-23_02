@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сучасні Нотатки</title>
+    <!-- ПРАВИЛЬНЕ ПІДКЛЮЧЕННЯ BOOTSTRAP 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+
+<body class="bg-light">
+
+<!-- Навігаційна панель зверху -->
+<!-- Оновлена навігаційна панель з посиланнями -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow">
+    <div class="container">
+        <!-- Логотип / Посилання на головну сторінку -->
+        <a class="navbar-brand fw-bold text-success" href="{% url 'notes_home' %}">📝 NotesApp</a>
+
+        <!-- Кнопка для мобільних пристроїв (гамбургер-меню) -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Меню навігації -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-collapse navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <!-- Посилання на головну сторінку -->
+                    <a class="nav-link active" aria-current="page" href="{% url 'notes_home' %}">Головна сторінка</a>
+                </li>
+                <li class="nav-item ms-lg-3">
+                    <!-- Посилання (якір) на форму створення нотатки -->
+                    <a class="btn btn-success btn-sm text-white px-3" href="#create-note-form">➕ Створити нотатку</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container">
+    <div class="row g-4">
+
+        <!-- ЛІВА КОЛОНКА: СТВОРЕННЯ НОТАТКИ -->
+        <div class="col-md-5">
+            <div class="card shadow-sm border-0 mb-4" id="create-note-form">
+                <div class="card-body">
+                    <h4 class="card-title text-primary mb-3">Нова нотатка</h4>
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-success w-100 mt-2">💾 Зберегти</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- БЛОК ПОШУКУ ТА ФІЛЬТРІВ -->
+            <div class="card shadow-sm border-0 bg-white">
+                <div class="card-body">
+                    <h5 class="card-title mb-3 text-secondary">Пошук та фільтри</h5>
+                    <form method="GET" action="{% url 'notes_home' %}">
+                        <div class="mb-3">
+                            <input type="text" name="search" value="{{ search_query }}"
+                                   placeholder="Пошук за заголовком..." class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <select name="category" class="form-select">
+                                <option value="">Всі категорії</option>
+                                {% for cat in categories %}
+                                <!-- Переконайся, що тут є пробіли навколо == -->
+                                <option value="{{ cat.id }}" {% if selected_category == cat.id|slugify %}selected{% endif %}>
+                                    {{ cat.title }}
+                                </option>
+                                {% endfor %}
+                            </select>
+
+                        </div>
+                        <div class="mb-3">
+                            <select name="reminder_filter" class="form-select">
+                                <option value="">Будь-який час</option>
+                                <option value="upcoming" {% if selected_reminder == 'upcoming' %}selected{% endif %}>Майбутні нагадування</option>
+                                <option value="past" {% if selected_reminder == 'past' %}selected{% endif %}>Минулі нагадування</option>
+                                <option value="none" {% if selected_reminder == 'none' %}selected{% endif %}>Без нагадувань</option>
+                            </select>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary flex-grow-1">🔍 Застосувати</button>
+                            <a href="{% url 'notes_home' %}" class="btn btn-outline-secondary">🔄 Скинути</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ПРАВА КОЛОНКА: СПИСОК НОТАТОК -->
+        <div class="col-md-7">
+            <h4 class="mb-3 text-dark">Мої Нотатки</h4>
+            <div class="row row-cols-1 g-3">
+                {% for note in notes %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title text-dark mb-0">{{ note.title }}</h5>
+                                <a href="{% url 'delete_note' note.id %}" class="btn btn-outline-danger btn-sm border-0"
+                                   onclick="return confirm('Ви впевнені?');">❌ Видалити</a>
+                            </div>
+                            <p class="card-text text-muted mb-3">{{ note.text }}</p>
+
+                            <div class="d-flex justify-content-between align-items-center mt-auto">
+                                {% if note.category %}
+                                <span class="badge bg-primary text-wrap">{{ note.category.title }}</span>
+                                {% else %}
+                                <span></span>
+                                {% endif %}
+
+                                {% if note.reminder %}
+                                <small class="text-secondary fw-bold">⏰ {{ note.reminder|date:"d.m.Y H:i" }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col">
+                    <div class="alert alert-info border-0 shadow-sm" role="alert">
+                        Нотаток за такими критеріями не знайдено.
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Підключаємо Bootstrap JS для роботи інтерактивних елементів (якщо знадобляться) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+</body>
+</html>
